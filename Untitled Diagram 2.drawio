@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2021-07-29T10:48:42.470Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15" etag="5SfN9UXt9gzRFpWwr0bh" version="14.9.2" type="github">
+<mxfile host="app.diagrams.net" modified="2021-07-29T13:54:36.023Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15" etag="LgX2X2dvaxTX2sq-4rDZ" version="14.9.2" type="github">
   <diagram id="fKsL_EHjpqXyekMX0sga" name="Page-1">
-    <mxGraphModel dx="1210" dy="1143" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="-12" dy="473" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -714,8 +714,11 @@
             <mxPoint x="1297.1599999999999" y="915" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="8FMTyJfVSTmq0ag7Tqlr-1" value="Regista" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=30;" vertex="1" parent="1">
+        <mxCell id="8FMTyJfVSTmq0ag7Tqlr-1" value="Regista" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=30;" parent="1" vertex="1">
           <mxGeometry x="1547.5" y="1185.1197459621553" width="60" height="26.34" as="geometry" />
+        </mxCell>
+        <mxCell id="_7ABxbMuRte8ETrxgGuc-1" value="(1,1)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="2210" y="305" width="40" height="25" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
