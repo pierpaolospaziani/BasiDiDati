@@ -1,0 +1,7 @@
+{
+	"host": "localhost",
+	"username": "manager",
+	"password": "manager",
+	"port": 3306,
+	"database": "noleggio-film"
+}
