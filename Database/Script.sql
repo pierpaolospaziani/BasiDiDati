@@ -1,7 +1,10 @@
-use mydb;
+use `noleggio-film`;
 
-call login('SPZ',MD5('Pier'),@a);
-call login('PPL',MD5('Pier'),@a);
+GRANT EXECUTE ON procedure `noleggio-film`.`login` TO 'login';
+
+call login('SPZ','Pier',@a);
+call login('PPL','Pier',@a);
+call login('S','Pier',@a);
 Select @a;
 
 call report_mensile('SPZ','2','2020',@ore,@esiste_impiegato);
