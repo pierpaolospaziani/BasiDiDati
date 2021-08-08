@@ -32,7 +32,7 @@ char *getInput(unsigned int lung, char *stringa, bool hide)
 
 		// Cattura i segnali che altrimenti potrebbero far terminare il programma, lasciando l'utente senza output sulla shell
 		sigemptyset(&sa.sa_mask);
-		sa.sa_flags = SA_INTERRUPT; // Per non resettare le system call
+        sa.sa_flags = 0;
 		sa.sa_handler = handler;
 		(void) sigaction(SIGALRM, &sa, &savealrm);
 		(void) sigaction(SIGINT, &sa, &saveint);

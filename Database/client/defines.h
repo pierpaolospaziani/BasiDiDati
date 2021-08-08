@@ -29,5 +29,5 @@ extern void finish_with_stmt_error(MYSQL *conn, MYSQL_STMT *stmt, char *message,
 extern bool setup_prepared_stmt(MYSQL_STMT **stmt, char *statement, MYSQL *conn);
 extern void dump_result_set(MYSQL *conn, MYSQL_STMT *stmt, char *title);
 
-extern void run_as_manager(MYSQL *conn);
-extern void run_as_impiegato(MYSQL *conn);
+extern void run_as_manager(MYSQL *conn, char* var_nome);
+extern void run_as_impiegato(MYSQL *conn, char* var_nome);
