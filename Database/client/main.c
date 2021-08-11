@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mysql.h>
+#include <mysql_time.h>
 
 #include "defines.h"
 #include "manager.c"
