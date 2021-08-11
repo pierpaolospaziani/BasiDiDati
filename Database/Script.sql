@@ -1,25 +1,40 @@
 use `noleggio-film`;
 
 GRANT EXECUTE ON procedure `noleggio-film`.`login` TO 'login';
+GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_turno` TO 'manager';
+GRANT EXECUTE ON procedure `noleggio-film`.`turni_del_giorno` TO 'manager';
+GRANT EXECUTE ON procedure `noleggio-film`.`report_mensile` TO 'manager';
+GRANT EXECUTE ON procedure `noleggio-film`.`report_annuale` TO 'manager';
+GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_impiegato` TO 'manager';
+GRANT EXECUTE ON procedure `noleggio-film`.`cambia_responsabile` TO 'manager';
+GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_film` TO 'manager';
+GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_copia` TO 'manager';
+GRANT EXECUTE ON procedure `noleggio-film`.`dequalifica_film` TO 'manager';
 
-call login('SPZ','Pier',@a);
-call login('PPL','Pier',@a);
-call login('S','Pier',@a);
+call login('SPZ','Pier',@a, @nome);
+call login('PPL','Pier',@a, @nome);
+call login('S','Pier',@a, @nome);
 Select @a;
+Select @nome;
 
-call report_mensile('SPZ','2','2020',@ore,@esiste_impiegato);
+call report_mensile('SPZ','2','2022',@ore);
 Select @ore;
-Select @esiste_impiegato;
-call report_annuale('SPZ','2020',@ore,@esiste_impiegato);
+call report_annuale('SPZ','2022',@ore);
 Select @ore;
-Select @esiste_impiegato;
 
-call aggiungi_turno('2021-03-04','2021-03-24','Commesso',1,'SPZ');
+call aggiungi_turno('2022-02-04','2022-02-4','Cashier',1,'AAA');
+
+call aggiungi_turno('2022-02-03','2022-02-3','Cashier',1,'AAA');
+call aggiungi_turno('2022-02-03','2022-02-3','Cashier',1,'BBB');
+call aggiungi_turno('2022-02-03','2022-02-3','Cashier',1,'CCC');
+call aggiungi_turno('2022-02-03','2022-02-3','Cashier',1,'DDD');
+
+call aggiungi_impiegato('1232','P','P','1','Impiegato');
 
 call aggiungi_centro('PPL','Via Mia','1','Frosinone');
-call cambia_responsabile('1','PPL');
+call cambia_responsabile('1','Spaziani');
 
-call turni_del_giorno('2020-2-3',1);
+call turni_del_giorno('2022-2-3',1);
 
 call aggiungi_copia('IT','Andrés Muschietti','1','1','2');
 
@@ -38,6 +53,8 @@ Select @c_giornaliero;
 call restituisci_film('1',@costo_extra);
 Select @costo_extra;
 
+select count(Impiegato_Turno) from `Turno` where `Impiegato_Turno` = 'SPZ' and `Data_Inizio` <= '2022-01-05' and `Data_Fine` >= '2022-01-05';
+
 select * from utenti;
 select * from Impiegato;
 select * from Turno order by `Data_Inizio` asc;
@@ -54,10 +71,6 @@ select * from Indirizzo;
 select * from Email;
 select * from Telefono;
 select * from Cellulare;
-
-
-
-
 
 
 
