@@ -10,6 +10,12 @@ GRANT EXECUTE ON procedure `noleggio-film`.`cambia_responsabile` TO 'manager';
 GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_film` TO 'manager';
 GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_copia` TO 'manager';
 GRANT EXECUTE ON procedure `noleggio-film`.`dequalifica_film` TO 'manager';
+GRANT EXECUTE ON procedure `noleggio-film`.`film_disponibili_noleggio` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`noleggia` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`restituisci_film` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`noleggi_scaduti` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`noleggi_cliente` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`info_cliente` TO 'impiegato';
 
 call login('SPZ','Pier',@a, @nome);
 call login('PPL','Pier',@a, @nome);
@@ -46,7 +52,8 @@ call noleggi_scaduti('1');
 
 call film_disponibili_noleggio('1');
 
-call noleggia('SPZPPL','2021-09-09','1','IT','Andrés Muschietti',@c_noleggio,@c_giornaliero);
+call noleggia('SPZPPL','2021-08-1','1','IT','Andrés Muschietti',@days,@c_noleggio,@c_giornaliero);
+Select @days;
 Select @c_noleggio;
 Select @c_giornaliero;
 
@@ -54,6 +61,10 @@ call restituisci_film('1',@costo_extra);
 Select @costo_extra;
 
 select count(Impiegato_Turno) from `Turno` where `Impiegato_Turno` = 'SPZ' and `Data_Inizio` <= '2022-01-05' and `Data_Fine` >= '2022-01-05';
+
+call noleggi_cliente('SPZPPL');
+
+call info_cliente('SPZPPL');
 
 select * from utenti;
 select * from Impiegato;
@@ -65,12 +76,20 @@ select * from Film;
 select * from Remake;
 select * from Recita;
 select * from Attore;
-select * from Noleggio;
+select * from Noleggio order by `Data_Restituzione` asc;
 select * from Cliente;
 select * from Indirizzo;
 select * from Email;
 select * from Telefono;
 select * from Cellulare;
+
+
+
+
+
+
+
+
 
 
 
