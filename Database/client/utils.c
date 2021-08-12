@@ -8,9 +8,7 @@ void print_stmt_error (MYSQL_STMT *stmt, char *message)
 {
 	fprintf (stderr, "%s\n", message);
 	if (stmt != NULL) {
-		fprintf (stderr, "Error %u (%s): %s\n",
-			mysql_stmt_errno (stmt),
-			mysql_stmt_sqlstate(stmt),
+		fprintf (stderr, "Error: %s\n",
 			mysql_stmt_error (stmt));
 	}
 }

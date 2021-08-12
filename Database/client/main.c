@@ -163,6 +163,6 @@ int main(void) {
 
     printf("Bye!\n");
 
-    mysql_close (conn);
+    mysql_close(conn);
     return 0;
 }

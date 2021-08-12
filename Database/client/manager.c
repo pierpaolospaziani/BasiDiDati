@@ -4,28 +4,6 @@
 
 #include "defines.h"
 
-static bool date_check(int dd, int mm, int yy){
-    if(yy>=2021 && yy<=9999){
-        if(mm>=1 && mm<=12){
-            if((dd>=1 && dd<=31) && (mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10 || mm==12)){
-                return true;
-            } else if((dd>=1 && dd<=30) && (mm==4 || mm==6 || mm==9 || mm==11)){
-                    return true;
-            } else if((dd>=1 && dd<=28) && (mm==2)){
-                    return true;
-            } else if(dd==29 && mm==2 && (yy%400==0 ||(yy%4==0 && yy%100!=0))){
-                return true;
-            } else{
-                return false;
-            }
-        } else {
-            return false;
-        }
-    } else {
-        return false;
-    }
-}
-
 static void add_workshift(MYSQL *conn){
     MYSQL_STMT *prepared_stmt;
     MYSQL_BIND param[5];
@@ -45,13 +23,13 @@ static void add_workshift(MYSQL *conn){
     char op = multiChoice("Cashier, Clerk or Warehouseman? [1/2/3]: ", options, 3);
     switch(op) {
         case '1':
-            sprintf(carica,"Cashier");
+            strcpy(carica,"Cashier");
             break;
         case '2':
-            sprintf(carica,"Clerk");
+            strcpy(carica,"Clerk");
             break;
         case '3':
-            sprintf(carica,"Warehouseman");
+            strcpy(carica,"Warehouseman");
             break;
         default:
             fprintf(stderr, "Invalid condition at %s:%d\n", __FILE__, __LINE__);
@@ -62,7 +40,7 @@ in_date:
     scanf("%2d-%2d-%4d",&dd,&mm,&yy);
     fflush(stdin);
     if (date_check(dd,mm,yy) == false){
-        printf("\nInvalid date, try again!\n");
+        printf("\nInvalid date, try again!\n\n");
         goto in_date;
     }
     start.day = dd;
@@ -74,7 +52,7 @@ fin_date:
     scanf("%2d-%2d-%4d",&dd,&mm,&yy);
     fflush(stdin);
     if (date_check(dd,mm,yy) == false){
-        printf("\nInvalid date, try again!\n");
+        printf("\nInvalid date, try again!\n\n");
         goto fin_date;
     }
     end.day = dd;
@@ -120,7 +98,9 @@ fin_date:
     } else {
         printf("\nWorkshift correctly added!\n");
     }
-
+    
+    mysql_stmt_free_result(prepared_stmt);
+    for(; mysql_next_result(conn) == 0;)
     mysql_stmt_close(prepared_stmt);
 }
 
@@ -138,7 +118,7 @@ l_date:
     scanf("%2d-%2d-%4d",&dd,&mm,&yy);
     fflush(stdin);
     if (date_check(dd,mm,yy) == false){
-        printf("\nInvalid date, try again!\n");
+        printf("\nInvalid date, try again!\n\n");
         goto l_date;
     }
     var_day.day = dd;
@@ -172,6 +152,7 @@ l_date:
     }
     
     dump_result_set(conn, prepared_stmt, "\nHere are the employees on duty:");
+    mysql_stmt_free_result(prepared_stmt);
     for(; mysql_next_result(conn) == 0;)
     mysql_stmt_close(prepared_stmt);
 }
@@ -192,7 +173,7 @@ l_month:
     scanf("%2d",&mm);
     fflush(stdin);
     if (mm < 1 || mm > 12) {
-        printf("\nInvalid month, try again!\n");
+        printf("\nInvalid month, try again!\n\n");
         goto l_month;
     }
     
@@ -247,6 +228,7 @@ l_month:
     
     dump_result_set(conn, prepared_stmt, "\nHere is the report:");
     printf("\nThis employee collected %d hour/s of work!\n", ore);
+    mysql_stmt_free_result(prepared_stmt);
     for(; mysql_next_result(conn) == 0;)
     mysql_stmt_close(prepared_stmt);
 }
@@ -309,6 +291,7 @@ static void annual_report(MYSQL *conn){
     
     dump_result_set(conn, prepared_stmt, "\nHere is the report:");
     printf("\nThis employee collected %d hour/s of work!\n", var_ore);
+    mysql_stmt_free_result(prepared_stmt);
     for(; mysql_next_result(conn) == 0;)
     mysql_stmt_close(prepared_stmt);
 }
@@ -385,7 +368,9 @@ static void add_employee(MYSQL *conn){
     } else {
         printf("\nEmployee correctly added!\n");
     }
-
+    
+    mysql_stmt_free_result(prepared_stmt);
+    for(; mysql_next_result(conn) == 0;)
     mysql_stmt_close(prepared_stmt);
 }
 
@@ -427,7 +412,9 @@ static void change_person_charge(MYSQL *conn){
     } else {
         printf("\nThe person in charge has been changed successfully!\n");
     }
-
+    
+    mysql_stmt_free_result(prepared_stmt);
+    for(; mysql_next_result(conn) == 0;)
     mysql_stmt_close(prepared_stmt);
 }
 
@@ -494,7 +481,9 @@ static void add_film(MYSQL *conn){
     } else {
         printf("\nThe Film has been added successfully!\n");
     }
-
+    
+    mysql_stmt_free_result(prepared_stmt);
+    for(; mysql_next_result(conn) == 0;)
     mysql_stmt_close(prepared_stmt);
 }
 
@@ -563,7 +552,9 @@ static void add_film_copy(MYSQL *conn){
     } else {
         printf("\nThe copy has been added successfully!\n");
     }
-
+    
+    mysql_stmt_free_result(prepared_stmt);
+    for(; mysql_next_result(conn) == 0;)
     mysql_stmt_close(prepared_stmt);
 }
 
@@ -602,7 +593,9 @@ static void qualifies_film(MYSQL *conn){
     } else {
         printf("\nThe Film has been qualified to Classic successfully!\n");
     }
-
+    
+    mysql_stmt_free_result(prepared_stmt);
+    for(; mysql_next_result(conn) == 0;)
     mysql_stmt_close(prepared_stmt);
 }
 
@@ -652,7 +645,7 @@ void run_as_manager(MYSQL *conn, char* var_nome){
 				annual_report(conn);    // ###
 				break;
             case '5':
-                add_employee(conn);
+                add_employee(conn);     // DA AGGIUNGERE LA PASSWORD PER CREARE ANCHE L'UTENTE
                 break;
             case '6':
                 change_person_charge(conn);
