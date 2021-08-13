@@ -143,7 +143,7 @@ void dump_result_set(MYSQL *conn, MYSQL_STMT *stmt, char *title)
 
 	if (num_fields > 0) {
 		/* there is a result set to fetch */
-		printf("%s\n", title);
+        printf("%s\n", title);
 
 		if((rs_metadata = mysql_stmt_result_metadata(stmt)) == NULL) {
 			finish_with_stmt_error(conn, stmt, "Unable to retrieve result metadata\n", true);
@@ -158,7 +158,7 @@ void dump_result_set(MYSQL *conn, MYSQL_STMT *stmt, char *title)
 			finish_with_stmt_error(conn, stmt, "Cannot allocate output buffers\n", true);
 		}
 		memset(rs_bind, 0, sizeof (MYSQL_BIND) * num_fields);
-
+        
 		/* set up and bind result set output buffers */
 		for (i = 0; i < num_fields; ++i) {
 
@@ -235,7 +235,7 @@ void dump_result_set(MYSQL *conn, MYSQL_STMT *stmt, char *title)
 					case MYSQL_TYPE_DATE:
 					case MYSQL_TYPE_TIMESTAMP:
 						date = (MYSQL_TIME *)rs_bind[i].buffer;
-						printf(" %d-%02d-%02d |", date->year, date->month, date->day);
+						printf(" %02d-%02d-%d |", date->day, date->month, date->year);
 						break;
 				       
 					case MYSQL_TYPE_STRING:
@@ -252,7 +252,11 @@ void dump_result_set(MYSQL *conn, MYSQL_STMT *stmt, char *title)
 					case MYSQL_TYPE_TINY:
 						printf(" %-*d |", (int)fields[i].max_length, *(int *)rs_bind[i].buffer);
 						break;
-				       
+                        
+                    case MYSQL_TYPE_LONGLONG:
+                        printf(" %-*lld |", (int)fields[i].max_length, *(long long int *)rs_bind[i].buffer);
+                        break;
+                        
 					case MYSQL_TYPE_NEWDECIMAL:
 						printf(" %-*.02lf |", (int)fields[i].max_length, *(float*) rs_bind[i].buffer);
 						break;
@@ -273,5 +277,5 @@ void dump_result_set(MYSQL *conn, MYSQL_STMT *stmt, char *title)
 			free(rs_bind[i].buffer);
 		}
 		free(rs_bind);
-	}
+    }
 }

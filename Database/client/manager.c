@@ -162,31 +162,43 @@ static void montly_report(MYSQL *conn){
     MYSQL_BIND param[4];
     
     char cf[64];
-    int mm,ore;
-    short int yy;
+    char mm_c[64];
+    char yy_c[64];
+    int mm;
+    int yy;
+    int ore;
     
     printf("\nEmployee Tax Code: ");
     getInput(63, cf, false);
     
 l_month:
     printf("Month [1-12]:      ");
-    scanf("%2d",&mm);
-    fflush(stdin);
+    getInput(2, mm_c, false);
+    if (isNumber(mm_c) == 0){
+        printf("Invalid digit!");
+        goto l_month;
+    }
+    mm = atoi(mm_c);
     if (mm < 1 || mm > 12) {
         printf("\nInvalid month, try again!\n\n");
         goto l_month;
     }
     
+l_year:
     printf("Year:              ");
-    scanf("%4hd",&yy);
-    fflush(stdin);
+    getInput(4, yy_c, false);
+    if (isNumber(yy_c) == 0){
+        printf("Invalid digit!");
+        goto l_year;
+    }
+    yy = atoi(yy_c);
     
     if(!setup_prepared_stmt(&prepared_stmt, "call report_mensile(?, ?, ?, ?)", conn)) {
-        finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize montly report statement\n", false);
+        finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize monlty report statement\n", false);
     }
 
     memset(param, 0, sizeof(param));
-
+    
     param[0].buffer_type = MYSQL_TYPE_VAR_STRING;
     param[0].buffer = cf;
     param[0].buffer_length = strlen(cf);
@@ -195,7 +207,7 @@ l_month:
     param[1].buffer = &mm;
     param[1].buffer_length = sizeof(mm);
     
-    param[2].buffer_type = MYSQL_TYPE_SHORT;
+    param[2].buffer_type = MYSQL_TYPE_LONG;
     param[2].buffer = &yy;
     param[2].buffer_length = sizeof(yy);
     
@@ -212,6 +224,7 @@ l_month:
     }
     
     memset(param, 0, sizeof(param));
+    
     param[0].buffer_type = MYSQL_TYPE_LONG;
     param[0].buffer = &ore;
     param[0].buffer_length = sizeof(ore);
@@ -298,7 +311,7 @@ static void annual_report(MYSQL *conn){
 
 static void add_employee(MYSQL *conn){
     MYSQL_STMT *prepared_stmt;
-    MYSQL_BIND param[5];
+    MYSQL_BIND param[6];
     
     char options[2] = {'1','2'};
     
@@ -308,11 +321,14 @@ static void add_employee(MYSQL *conn){
     char ruolo[64];
     char telefono_c[10];
     int telefono;
+    char pssw[64];
     
     printf("\nEmployee Tax Code: ");
     getInput(64, cf, false);
     printf("Employee Name: ");
     getInput(64, nome, false);
+    printf("Password for login: ");
+    getInput(64, pssw, false);
     
     char op = multiChoice("Manager or Employee? [1/2]: ", options, 2);
     switch(op) {
@@ -333,7 +349,7 @@ static void add_employee(MYSQL *conn){
     getInput(10, telefono_c, false);
     telefono = atoi(telefono_c);
     
-    if(!setup_prepared_stmt(&prepared_stmt, "call aggiungi_impiegato(?, ?, ?, ?, ?)", conn)) {
+    if(!setup_prepared_stmt(&prepared_stmt, "call aggiungi_impiegato(?, ?, ?, ?, ?, ?)", conn)) {
         finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize employee insertion statement\n", false);
     }
 
@@ -358,6 +374,10 @@ static void add_employee(MYSQL *conn){
     param[4].buffer_type = MYSQL_TYPE_VAR_STRING;
     param[4].buffer = ruolo;
     param[4].buffer_length = strlen(ruolo);
+    
+    param[5].buffer_type = MYSQL_TYPE_VAR_STRING;
+    param[5].buffer = pssw;
+    param[5].buffer_length = strlen(pssw);
 
     if (mysql_stmt_bind_param(prepared_stmt, param) != 0) {
         finish_with_stmt_error(conn, prepared_stmt, "\nCould not bind parameters for add employee\n", true);
@@ -645,7 +665,7 @@ void run_as_manager(MYSQL *conn, char* var_nome){
 				annual_report(conn);    // ###
 				break;
             case '5':
-                add_employee(conn);     // DA AGGIUNGERE LA PASSWORD PER CREARE ANCHE L'UTENTE
+                add_employee(conn);
                 break;
             case '6':
                 change_person_charge(conn);

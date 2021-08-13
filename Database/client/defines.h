@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <mysql.h>
+#include <ctype.h>
 
 static bool date_check(int dd, int mm, int yy){
     if(yy>=2021 && yy<=9999){
@@ -23,6 +24,14 @@ static bool date_check(int dd, int mm, int yy){
     } else {
         return false;
     }
+}
+
+int isNumber(char s[]){
+    for (int i = 0; s[i]!= '\0'; i++)    {
+        if (isdigit(s[i]) == 0)
+              return 0;
+    }
+    return 1;
 }
 
 struct configuration {

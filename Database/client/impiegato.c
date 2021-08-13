@@ -282,6 +282,7 @@ static void client_info(MYSQL *conn){
     MYSQL_STMT *prepared_stmt;
     MYSQL_BIND param[1];
     int status;
+    int i = 0;
     
     char cliente[64];
     
@@ -311,10 +312,19 @@ static void client_info(MYSQL *conn){
             goto next;
         }
         
-        // METTERE UN CONTATORE PER CAMBIARE OGNI VOLTA IL TESTO PER IL DUMP
-        // VI COME CONTROLLARE SE LE TABELLE SONO VUOTE PER DIRE CHE NON CI SONO INFO
+        if (i == 0){
+            dump_result_set(conn, prepared_stmt, "\nHere are the client infos:");
+        } else if (i == 1){
+            dump_result_set(conn, prepared_stmt, "");
+        } else if (i == 2){
+            dump_result_set(conn, prepared_stmt, "");
+        } else if (i == 3){
+            dump_result_set(conn, prepared_stmt, "");
+        } else if (i == 4){
+            dump_result_set(conn, prepared_stmt, "");
+        }
         
-        dump_result_set(conn, prepared_stmt, "\nHere are the client infos:");
+        i++;
         
     next:
         status = mysql_stmt_next_result(prepared_stmt);
@@ -322,6 +332,343 @@ static void client_info(MYSQL *conn){
             finish_with_stmt_error(conn, prepared_stmt, "Unexpected condition", true);
         }
     } while (status == 0);
+    
+    mysql_stmt_free_result(prepared_stmt);
+    for(; mysql_next_result(conn) == 0;)
+    mysql_stmt_close(prepared_stmt);
+}
+
+static void add_client(MYSQL *conn){
+    MYSQL_STMT *prepared_stmt;
+    MYSQL_BIND param[4];
+    
+    char cliente[64];
+    char nome[64];
+    char cognome[64];
+    MYSQL_TIME data_nascita;
+    int dd,mm,yy;
+    
+    printf("\nClient Tax Code: ");
+    getInput(64, cliente, false);
+    printf("Client Name: ");
+    getInput(64, nome, false);
+    printf("Client Surname: ");
+    getInput(64, cognome, false);
+    
+l_date:
+    printf("Birth Date (dd-mm-yyyy): ");
+    scanf("%2d-%2d-%4d",&dd,&mm,&yy);
+    fflush(stdin);
+    if (date_check(dd,mm,2222) == false){
+        printf("\nInvalid date, try again!\n\n");
+        goto l_date;
+    }
+    data_nascita.day = dd;
+    data_nascita.month = mm;
+    data_nascita.year = yy;
+    
+    if(!setup_prepared_stmt(&prepared_stmt, "call aggiungi_cliente(?, ?, ?, ?)", conn)) {
+        finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize add client statement\n", false);
+    }
+
+    memset(param, 0, sizeof(param));
+    
+    param[0].buffer_type = MYSQL_TYPE_VAR_STRING;
+    param[0].buffer = &cliente;
+    param[0].buffer_length = strlen(cliente);
+    
+    param[1].buffer_type = MYSQL_TYPE_VAR_STRING;
+    param[1].buffer = &nome;
+    param[1].buffer_length = strlen(nome);
+    
+    param[2].buffer_type = MYSQL_TYPE_VAR_STRING;
+    param[2].buffer = &cognome;
+    param[2].buffer_length = strlen(cognome);
+    
+    param[3].buffer_type = MYSQL_TYPE_DATE;
+    param[3].buffer = &data_nascita;
+    param[3].buffer_length = sizeof(data_nascita);
+
+    if (mysql_stmt_bind_param(prepared_stmt, param) != 0) {
+        finish_with_stmt_error(conn, prepared_stmt, "\nCould not bind parameters to add client\n", true);
+    }
+
+    if (mysql_stmt_execute(prepared_stmt) != 0) {
+        print_stmt_error (prepared_stmt, "\nAn error occurred while adding client.");
+    } else {
+        printf("\nClient correctly added!\n");
+    }
+    
+    mysql_stmt_free_result(prepared_stmt);
+    for(; mysql_next_result(conn) == 0;)
+    mysql_stmt_close(prepared_stmt);
+}
+
+static void modify_client(MYSQL *conn){
+    MYSQL_STMT *prepared_stmt;
+    MYSQL_BIND param[4];
+    char options[8] = {'1','2','3','4','5','6','7','8'};
+    
+    char cliente[64];
+    char numero_c[11];
+    int numero_i;
+    int centro = 0;
+    char via[64];
+    char citta[64];
+    bool tipo = false;
+    
+    printf("\nClient Tax Code: ");
+    getInput(64, cliente, false);
+    
+    char op = multiChoice("\n1) Add Cellular Number\n2) Add Telephone Number\n3) Add Address\n4) Add Email\n5) Remove Cellular Number\n6) Remove Telephone Number\n7) Remove Address\n8) Remove Email\n\nWhich info you wanna modify?: ", options, 8);
+    switch(op) {
+        case '1':
+    l_c1:
+            printf("\nCellular Number: ");
+            getInput(10, numero_c, false);
+            if (isNumber(numero_c) == 0){
+                printf("Invalid digit!");
+                goto l_c1;
+            }
+            numero_i = atoi(numero_c);
+            
+            if(!setup_prepared_stmt(&prepared_stmt, "call aggiungi_cellulare(?, ?)", conn)) {
+                finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize modify client statement\n", false);
+            }
+            
+            memset(param, 0, sizeof(param));
+            
+            param[0].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[0].buffer = numero_c;
+            param[0].buffer_length = strlen(numero_c);
+            
+            param[1].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[1].buffer = cliente;
+            param[1].buffer_length = strlen(cliente);
+            
+            break;
+        case '2':
+    l_t1:
+            printf("\nTelephone Number: ");
+            getInput(10, numero_c, false);
+            if (isNumber(numero_c) == 0){
+                printf("Invalid digit!");
+                goto l_t1;
+            }
+            numero_i = atoi(numero_c);
+            
+            if(!setup_prepared_stmt(&prepared_stmt, "call aggiungi_telefono(?, ?, ?, ?)", conn)) {
+                finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize modify client statement\n", false);
+            }
+            
+            memset(param, 0, sizeof(param));
+            
+            param[0].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[0].buffer = numero_c;
+            param[0].buffer_length = strlen(numero_c);
+            
+            param[1].buffer_type = MYSQL_TYPE_LONG;
+            param[1].buffer = &centro;
+            param[1].buffer_length = sizeof(centro);
+            
+            param[2].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[2].buffer = cliente;
+            param[2].buffer_length = strlen(cliente);
+            
+            param[3].buffer_type = MYSQL_TYPE_TINY;
+            param[3].buffer = &tipo;
+            param[3].buffer_length = sizeof(tipo);
+            
+            break;
+        case '3':
+            printf("\nCity: ");
+            getInput(64, citta, false);
+            printf("Street: ");
+            getInput(64, via, false);
+            
+            printf("House Number: ");
+            getInput(2, numero_c, false);
+            numero_i = atoi(numero_c);
+            
+            if(!setup_prepared_stmt(&prepared_stmt, "call aggiungi_indirizzo(?, ?, ?, ?)", conn)) {
+                finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize modify client statement\n", false);
+            }
+            
+            memset(param, 0, sizeof(param));
+            
+            param[0].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[0].buffer = via;
+            param[0].buffer_length = strlen(via);
+            
+            param[1].buffer_type = MYSQL_TYPE_LONG;
+            param[1].buffer = &numero_i;
+            param[1].buffer_length = sizeof(numero_i);
+            
+            param[2].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[2].buffer = citta;
+            param[2].buffer_length = strlen(citta);
+            
+            param[3].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[3].buffer = cliente;
+            param[3].buffer_length = strlen(cliente);
+            
+            break;
+        case '4':
+            printf("\nEmail: ");
+            getInput(64, via, false);
+            
+            if(!setup_prepared_stmt(&prepared_stmt, "call aggiungi_email(?, ?, ?, ?)", conn)) {
+                finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize modify client statement\n", false);
+            }
+            
+            memset(param, 0, sizeof(param));
+            
+            param[0].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[0].buffer = via;
+            param[0].buffer_length = strlen(via);
+            
+            param[1].buffer_type = MYSQL_TYPE_LONG;
+            param[1].buffer = &centro;
+            param[1].buffer_length = sizeof(centro);
+            
+            param[2].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[2].buffer = cliente;
+            param[2].buffer_length = strlen(cliente);
+            
+            param[3].buffer_type = MYSQL_TYPE_TINY;
+            param[3].buffer = &tipo;
+            param[3].buffer_length = sizeof(tipo);
+            
+            break;
+        case '5':
+    l_c2:
+            printf("\nCellular Number: ");
+            getInput(10, numero_c, false);
+            if (isNumber(numero_c) == 0){
+                printf("Invalid digit!");
+                goto l_c2;
+            }
+            numero_i = atoi(numero_c);
+            
+            if(!setup_prepared_stmt(&prepared_stmt, "call elimina_cellulare(?)", conn)) {
+                finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize modify client statement\n", false);
+            }
+            
+            memset(param, 0, sizeof(param));
+            
+            param[0].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[0].buffer = numero_c;
+            param[0].buffer_length = strlen(numero_c);
+            
+            break;
+        case '6':
+    l_t2:
+            printf("\nTelephone Number: ");
+            getInput(10, numero_c, false);
+            if (isNumber(numero_c) == 0){
+                printf("Invalid digit!");
+                goto l_t2;
+            }
+            numero_i = atoi(numero_c);
+            
+            if(!setup_prepared_stmt(&prepared_stmt, "call elimina_telefono(?, ?, ?, ?)", conn)) {
+                finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize modify client statement\n", false);
+            }
+            
+            memset(param, 0, sizeof(param));
+            
+            param[0].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[0].buffer = cliente;
+            param[0].buffer_length = strlen(cliente);
+            
+            param[1].buffer_type = MYSQL_TYPE_LONG;
+            param[1].buffer = &centro;
+            param[1].buffer_length = sizeof(centro);
+            
+            param[2].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[2].buffer = numero_c;
+            param[2].buffer_length = strlen(numero_c);
+            
+            param[3].buffer_type = MYSQL_TYPE_TINY;
+            param[3].buffer = &tipo;
+            param[3].buffer_length = sizeof(tipo);
+            
+            break;
+        case '7':
+            printf("\nCity: ");
+            getInput(64, citta, false);
+            printf("\nStreet: ");
+            getInput(64, via, false);
+            
+            printf("\nHouse Number: ");
+            getInput(2, numero_c, false);
+            numero_i = atoi(numero_c);
+            
+            
+            if(!setup_prepared_stmt(&prepared_stmt, "call elimina_indirizzo(?, ?, ?, ?)", conn)) {
+                finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize modify client statement\n", false);
+            }
+            
+            memset(param, 0, sizeof(param));
+            
+            param[0].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[0].buffer = cliente;
+            param[0].buffer_length = strlen(cliente);
+            
+            param[1].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[1].buffer = via;
+            param[1].buffer_length = strlen(via);
+            
+            param[2].buffer_type = MYSQL_TYPE_LONG;
+            param[2].buffer = &numero_i;
+            param[2].buffer_length = sizeof(numero_i);
+            
+            param[3].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[3].buffer = citta;
+            param[3].buffer_length = strlen(citta);
+            
+            break;
+        case '8':
+            printf("\nEmail: ");
+            getInput(64, via, false);
+            
+            if(!setup_prepared_stmt(&prepared_stmt, "call elimina_email(?, ?, ?, ?)", conn)) {
+                finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize modify client statement\n", false);
+            }
+            
+            memset(param, 0, sizeof(param));
+            
+            param[0].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[0].buffer = cliente;
+            param[0].buffer_length = strlen(cliente);
+            
+            param[1].buffer_type = MYSQL_TYPE_LONG;
+            param[1].buffer = &centro;
+            param[1].buffer_length = sizeof(centro);
+            
+            param[2].buffer_type = MYSQL_TYPE_VAR_STRING;
+            param[2].buffer = via;
+            param[2].buffer_length = strlen(via);
+            
+            param[3].buffer_type = MYSQL_TYPE_TINY;
+            param[3].buffer = &tipo;
+            param[3].buffer_length = sizeof(tipo);
+            
+            break;
+        default:
+            fprintf(stderr, "Invalid condition at %s:%d\n", __FILE__, __LINE__);
+            abort();
+    }
+
+    if (mysql_stmt_bind_param(prepared_stmt, param) != 0) {
+        finish_with_stmt_error(conn, prepared_stmt, "\nCould not bind parameters to modify client\n", true);
+    }
+
+    if (mysql_stmt_execute(prepared_stmt) != 0) {
+        print_stmt_error (prepared_stmt, "\nAn error occurred while modifying client.");
+    } else {
+        printf("\nClient correctly motified!\n");
+    }
     
     mysql_stmt_free_result(prepared_stmt);
     for(; mysql_next_result(conn) == 0;)
@@ -379,10 +726,10 @@ void run_as_impiegato(MYSQL *conn, char* var_nome){
                 client_info(conn);
                 break;
             case '7':
-                //add_client(conn);
+                add_client(conn);
                 break;
             case '8':
-                //modify_client(conn);
+                modify_client(conn);
                 break;
             case '0':
                 return;
