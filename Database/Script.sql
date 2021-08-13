@@ -16,6 +16,15 @@ GRANT EXECUTE ON procedure `noleggio-film`.`restituisci_film` TO 'impiegato';
 GRANT EXECUTE ON procedure `noleggio-film`.`noleggi_scaduti` TO 'impiegato';
 GRANT EXECUTE ON procedure `noleggio-film`.`noleggi_cliente` TO 'impiegato';
 GRANT EXECUTE ON procedure `noleggio-film`.`info_cliente` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_cliente` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_cellulare` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_telefono` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_indirizzo` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_email` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`elimina_cellulare` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`elimina_telefono` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`elimina_indirizzo` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`elimina_email` TO 'impiegato';
 
 call login('SPZ','Pier',@a, @nome);
 call login('PPL','Pier',@a, @nome);
@@ -83,7 +92,7 @@ select * from Email;
 select * from Telefono;
 select * from Cellulare;
 
-
+call aggiungi_cellulare('000','SPZPPL');
 
 
 
