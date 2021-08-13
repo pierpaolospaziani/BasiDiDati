@@ -165,7 +165,7 @@ static void montly_report(MYSQL *conn){
     char mm_c[64];
     char yy_c[64];
     int mm;
-    int yy;
+    short int yy;
     int ore;
     
     printf("\nEmployee Tax Code: ");
@@ -207,7 +207,7 @@ l_year:
     param[1].buffer = &mm;
     param[1].buffer_length = sizeof(mm);
     
-    param[2].buffer_type = MYSQL_TYPE_LONG;
+    param[2].buffer_type = MYSQL_TYPE_SHORT;
     param[2].buffer = &yy;
     param[2].buffer_length = sizeof(yy);
     
@@ -223,23 +223,26 @@ l_year:
         print_stmt_error (prepared_stmt, "\nAn error occurred showing montly report.");
     }
     
+    dump_result_set(conn, prepared_stmt, "\nHere is the report:");
+    
+    if (mysql_stmt_next_result(prepared_stmt) > 0){
+        finish_with_stmt_error(conn, prepared_stmt, "Unexpected condition", true);
+    }
+    
     memset(param, 0, sizeof(param));
     
     param[0].buffer_type = MYSQL_TYPE_LONG;
     param[0].buffer = &ore;
     param[0].buffer_length = sizeof(ore);
-    /*
+    
     if(mysql_stmt_bind_result(prepared_stmt, param)) {
         finish_with_stmt_error(conn, prepared_stmt, "Could not retrieve output parameter", true);
     }
     
     if(mysql_stmt_fetch(prepared_stmt)) {
         finish_with_stmt_error(conn, prepared_stmt, "Could not buffer results", true);
-    }*/
+    }
     
-    // mettere if ore lavorate = 0 non stamapre il report
-    
-    dump_result_set(conn, prepared_stmt, "\nHere is the report:");
     printf("\nThis employee collected %d hour/s of work!\n", ore);
     mysql_stmt_free_result(prepared_stmt);
     for(; mysql_next_result(conn) == 0;)
@@ -251,15 +254,21 @@ static void annual_report(MYSQL *conn){
     MYSQL_BIND param[3];
     
     char cf[64];
-    int year;
+    char year_c[64];
+    short int year;
     int var_ore;
     
     printf("\nEmployee Tax Code: ");
     getInput(64, cf, false);
     
+l_year:
     printf("Year:              ");
-    scanf("%4d",&year);
-    fflush(stdin);
+    getInput(4, year_c, false);
+    if (isNumber(year_c) == 0){
+        printf("Invalid digit!");
+        goto l_year;
+    }
+    year = atoi(year_c);
     
     if(!setup_prepared_stmt(&prepared_stmt, "call report_annuale(?, ?, ?)", conn)) {
         finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize annual report statement\n", false);
@@ -271,7 +280,7 @@ static void annual_report(MYSQL *conn){
     param[0].buffer = cf;
     param[0].buffer_length = strlen(cf);
     
-    param[1].buffer_type = MYSQL_TYPE_LONG;;
+    param[1].buffer_type = MYSQL_TYPE_SHORT;;
     param[1].buffer = &year;
     param[1].buffer_length = sizeof(year);
     
@@ -287,22 +296,26 @@ static void annual_report(MYSQL *conn){
         print_stmt_error (prepared_stmt, "\nAn error occurred showing annual report.");
     }
     
+    dump_result_set(conn, prepared_stmt, "\nHere is the report:");
+    
+    if (mysql_stmt_next_result(prepared_stmt) > 0){
+        finish_with_stmt_error(conn, prepared_stmt, "Unexpected condition", true);
+    }
+    
     memset(param, 0, sizeof(param));
+    
     param[0].buffer_type = MYSQL_TYPE_LONG;
     param[0].buffer = &var_ore;
     param[0].buffer_length = sizeof(var_ore);
-    /*
+    
     if(mysql_stmt_bind_result(prepared_stmt, param)) {
         finish_with_stmt_error(conn, prepared_stmt, "Could not retrieve output parameter", true);
     }
     
     if(mysql_stmt_fetch(prepared_stmt)) {
         finish_with_stmt_error(conn, prepared_stmt, "Could not buffer results", true);
-    }*/
+    }
     
-    // mettere if ore lavorate = 0 non stamapre il report
-    
-    dump_result_set(conn, prepared_stmt, "\nHere is the report:");
     printf("\nThis employee collected %d hour/s of work!\n", var_ore);
     mysql_stmt_free_result(prepared_stmt);
     for(; mysql_next_result(conn) == 0;)
