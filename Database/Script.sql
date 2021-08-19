@@ -8,6 +8,7 @@ GRANT EXECUTE ON procedure `noleggio-film`.`report_annuale` TO 'manager';
 GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_impiegato` TO 'manager';
 GRANT EXECUTE ON procedure `noleggio-film`.`cambia_responsabile` TO 'manager';
 GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_film` TO 'manager';
+GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_attore_recita` TO 'manager';
 GRANT EXECUTE ON procedure `noleggio-film`.`aggiungi_copia` TO 'manager';
 GRANT EXECUTE ON procedure `noleggio-film`.`dequalifica_film` TO 'manager';
 GRANT EXECUTE ON procedure `noleggio-film`.`film_disponibili_noleggio` TO 'impiegato';
@@ -25,6 +26,7 @@ GRANT EXECUTE ON procedure `noleggio-film`.`elimina_cellulare` TO 'impiegato';
 GRANT EXECUTE ON procedure `noleggio-film`.`elimina_telefono` TO 'impiegato';
 GRANT EXECUTE ON procedure `noleggio-film`.`elimina_indirizzo` TO 'impiegato';
 GRANT EXECUTE ON procedure `noleggio-film`.`elimina_email` TO 'impiegato';
+GRANT EXECUTE ON procedure `noleggio-film`.`visualizza_attori_film` TO 'impiegato';
 
 call login('SPZ','Pier',@a, @nome);
 call login('PPL','Pier',@a, @nome);
@@ -74,6 +76,10 @@ select count(Impiegato_Turno) from `Turno` where `Impiegato_Turno` = 'SPZ' and `
 call noleggi_cliente('SPZPPL');
 
 call info_cliente('SPZPPL');
+call visualizza_dettagli_film('IT','Andrés Muschietti',@a,@b,@c);
+Select @a;
+Select @b;
+Select @c;
 
 select * from utenti;
 select * from Impiegato;
@@ -92,7 +98,8 @@ select * from Email;
 select * from Telefono;
 select * from Cellulare;
 
-call aggiungi_cellulare('000','SPZPPL');
+
+
 
 
 
