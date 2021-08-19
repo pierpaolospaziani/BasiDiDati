@@ -675,8 +675,48 @@ static void modify_client(MYSQL *conn){
     mysql_stmt_close(prepared_stmt);
 }
 
+static void film_actors(MYSQL *conn){
+    MYSQL_STMT *prepared_stmt;
+    MYSQL_BIND param[2];
+    
+    char titolo[64];
+    char regista[64];
+    
+    printf("\nFilm Title: ");
+    getInput(64, titolo, false);
+    printf("Movie Director: ");
+    getInput(64, regista, false);
+    
+    if(!setup_prepared_stmt(&prepared_stmt, "call visualizza_attori_film(?, ?)", conn)) {
+        finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize get film info\n", false);
+    }
+
+    memset(param, 0, sizeof(param));
+    
+    param[0].buffer_type = MYSQL_TYPE_VAR_STRING;
+    param[0].buffer = titolo;
+    param[0].buffer_length = strlen(titolo);
+    
+    param[1].buffer_type = MYSQL_TYPE_VAR_STRING;
+    param[1].buffer = regista;
+    param[1].buffer_length = strlen(regista);
+    
+    if (mysql_stmt_bind_param(prepared_stmt, param) != 0) {
+        finish_with_stmt_error(conn, prepared_stmt, "\nCould not bind parameters to get the film infos\n", true);
+    }
+
+    if (mysql_stmt_execute(prepared_stmt) != 0) {
+        print_stmt_error (prepared_stmt, "\nAn error occurred while getting the film infos.");
+    } else {
+        dump_result_set(conn, prepared_stmt, "\nHere is the actor/s list:");
+    }
+    mysql_stmt_free_result(prepared_stmt);
+    for(; mysql_next_result(conn) == 0;)
+    mysql_stmt_close(prepared_stmt);
+}
+
 void run_as_impiegato(MYSQL *conn, char* var_nome){
-    char options[9] = {'1','2','3','4','5','6','7','8','0'};
+    char options[10] = {'1','2','3','4','5','6','7','8','9','0'};
 	char op;
     
     if(!parse_config("users/impiegato.json", &conf)) {
@@ -702,9 +742,10 @@ void run_as_impiegato(MYSQL *conn, char* var_nome){
         printf("6) Client info\n");
         printf("7) Add new client\n");
         printf("8) Modify client info\n");
+        printf("9) Actors of the film\n");
         printf("0) QUIT\n");
 
-        op = multiChoice("\nSelect an option", options, 9);
+        op = multiChoice("\nSelect an option", options, 10);
 
         switch(op) {
             case '1':
@@ -730,6 +771,9 @@ void run_as_impiegato(MYSQL *conn, char* var_nome){
                 break;
             case '8':
                 modify_client(conn);
+                break;
+            case '9':
+                film_actors(conn);
                 break;
             case '0':
                 return;

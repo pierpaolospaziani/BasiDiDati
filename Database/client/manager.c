@@ -453,7 +453,7 @@ static void change_person_charge(MYSQL *conn){
 
 static void add_film(MYSQL *conn){
     MYSQL_STMT *prepared_stmt;
-    MYSQL_BIND param[4];
+    MYSQL_BIND param[7];
     
     char options[2] = {'1','2'};
     
@@ -461,6 +461,13 @@ static void add_film(MYSQL *conn){
     char regista[64];
     int anno;
     bool nuovo;
+    bool remake = false;
+    char titolo_orignale[64];
+    char regista_originale[64];
+    char actors_c[16];
+    int actors;
+    char name[64];
+    char surname[64];
     
     printf("\nFilm Title: ");
     getInput(64, titolo, false);
@@ -470,7 +477,7 @@ static void add_film(MYSQL *conn){
     scanf("%4d",&anno);
     fflush(stdin);
     
-    char op = multiChoice("Is a New Film or a Classic one? [1/2]: ", options, 2);
+    char op = multiChoice("Is a New Film or a Classic one?", options, 2);
     switch(op) {
         case '1':
             nuovo = true;
@@ -483,7 +490,26 @@ static void add_film(MYSQL *conn){
             abort();
     }
     
-    if(!setup_prepared_stmt(&prepared_stmt, "call aggiungi_film(?, ?, ?, ?)", conn)) {
+    op = multiChoice("Is this a Remake or an Orinal? ", options, 2);
+    switch(op) {
+        case '1':
+            remake = true;
+            printf("Which is the original one?: ");
+            getInput(64, titolo_orignale, false);
+            printf("Directed by?: ");
+            getInput(64, regista_originale, false);
+            break;
+        case '2':
+            remake = false;
+            strcpy(titolo_orignale,"");
+            strcpy(regista_originale,"");
+            break;
+        default:
+            fprintf(stderr, "Invalid condition at %s:%d\n", __FILE__, __LINE__);
+            abort();
+    }
+    
+    if(!setup_prepared_stmt(&prepared_stmt, "call aggiungi_film(?, ?, ?, ?, ?, ? ,?)", conn)) {
         finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize add film statement\n", false);
     }
 
@@ -504,6 +530,18 @@ static void add_film(MYSQL *conn){
     param[3].buffer_type = MYSQL_TYPE_TINY;
     param[3].buffer = &nuovo;
     param[3].buffer_length = sizeof(nuovo);
+    
+    param[4].buffer_type = MYSQL_TYPE_TINY;
+    param[4].buffer = &remake;
+    param[4].buffer_length = sizeof(remake);
+    
+    param[5].buffer_type = MYSQL_TYPE_VAR_STRING;
+    param[5].buffer = titolo_orignale;
+    param[5].buffer_length = strlen(titolo_orignale);
+    
+    param[6].buffer_type = MYSQL_TYPE_VAR_STRING;
+    param[6].buffer = regista_originale;
+    param[6].buffer_length = strlen(regista_originale);
 
     if (mysql_stmt_bind_param(prepared_stmt, param) != 0) {
         finish_with_stmt_error(conn, prepared_stmt, "\nCould not bind parameters to add the film\n", true);
@@ -516,7 +554,69 @@ static void add_film(MYSQL *conn){
     }
     
     mysql_stmt_free_result(prepared_stmt);
-    for(; mysql_next_result(conn) == 0;)
+    
+    op = multiChoice("\nDo you wanna add actors too? (1 = Yes / 2 = No)", options, 2);
+    switch(op) {
+        case '1':
+        act:
+            printf("How many?: ");
+            getInput(15, actors_c, false);
+            if (isNumber(actors_c) == 0){
+                printf("Invalid digit!");
+                goto act;
+            }
+            actors = atoi(actors_c);
+            
+            for (int i=0; i<actors; i++){
+                printf("\nActor %d Name: ", i);
+                getInput(64, name, false);
+                printf("Actor %d Surname: ", i);
+                getInput(64, surname, false);
+                
+                
+                if(!setup_prepared_stmt(&prepared_stmt, "call aggiungi_attore_recita(?, ?, ?, ?)", conn)) {
+                    finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize add actor statement\n", false);
+                }
+
+                memset(param, 0, sizeof(param));
+                
+                param[0].buffer_type = MYSQL_TYPE_VAR_STRING;
+                param[0].buffer = titolo;
+                param[0].buffer_length = strlen(titolo);
+                
+                param[1].buffer_type = MYSQL_TYPE_VAR_STRING;
+                param[1].buffer = regista;
+                param[1].buffer_length = strlen(regista);
+                
+                param[2].buffer_type = MYSQL_TYPE_VAR_STRING;
+                param[2].buffer = name;
+                param[2].buffer_length = strlen(name);
+                
+                param[3].buffer_type = MYSQL_TYPE_VAR_STRING;
+                param[3].buffer = surname;
+                param[3].buffer_length = strlen(surname);
+
+                if (mysql_stmt_bind_param(prepared_stmt, param) != 0) {
+                    finish_with_stmt_error(conn, prepared_stmt, "\nCould not bind parameters to add the actor\n", true);
+                }
+
+                if (mysql_stmt_execute(prepared_stmt) != 0) {
+                    print_stmt_error (prepared_stmt, "\nAn error occurred while adding the actor.");
+                } else {
+                    printf("\nActor and Acting added successfully!\n");
+                }
+                
+                mysql_stmt_free_result(prepared_stmt);
+            }
+            
+            break;
+        case '2':
+            printf("\nOk, no actors added.\n");
+            break;
+        default:
+            fprintf(stderr, "Invalid condition at %s:%d\n", __FILE__, __LINE__);
+            abort();
+    }
     mysql_stmt_close(prepared_stmt);
 }
 
@@ -672,10 +772,10 @@ void run_as_manager(MYSQL *conn, char* var_nome){
 				show_workshifts(conn);
 				break;
 			case '3':
-				montly_report(conn);    // ###
+				montly_report(conn);
 				break;
 			case '4':
-				annual_report(conn);    // ###
+				annual_report(conn);
 				break;
             case '5':
                 add_employee(conn);

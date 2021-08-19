@@ -180,10 +180,14 @@ void dump_result_set(MYSQL *conn, MYSQL_STMT *stmt, char *title)
 					attr_size = sizeof(signed char);
 					break;
 				case MYSQL_TYPE_SHORT:
+                    attr_size = sizeof(short int);
+                    break;
 				case MYSQL_TYPE_YEAR:
 					attr_size = sizeof(short int);
 					break;
 				case MYSQL_TYPE_LONG:
+                    attr_size = sizeof(long int);
+                    break;
 				case MYSQL_TYPE_INT24:
 					attr_size = sizeof(int);
 					break;
@@ -249,6 +253,7 @@ void dump_result_set(MYSQL *conn, MYSQL_STMT *stmt, char *title)
 		 
 					case MYSQL_TYPE_LONG:
 					case MYSQL_TYPE_SHORT:
+                    case MYSQL_TYPE_YEAR:
 					case MYSQL_TYPE_TINY:
 						printf(" %-*d |", (int)fields[i].max_length, *(int *)rs_bind[i].buffer);
 						break;
