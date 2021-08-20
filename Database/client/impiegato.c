@@ -434,7 +434,6 @@ static void modify_client(MYSQL *conn){
                 printf("Invalid digit!");
                 goto l_c1;
             }
-            numero_i = atoi(numero_c);
             
             if(!setup_prepared_stmt(&prepared_stmt, "call aggiungi_cellulare(?, ?)", conn)) {
                 finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize modify client statement\n", false);
@@ -459,7 +458,6 @@ static void modify_client(MYSQL *conn){
                 printf("Invalid digit!");
                 goto l_t1;
             }
-            numero_i = atoi(numero_c);
             
             if(!setup_prepared_stmt(&prepared_stmt, "call aggiungi_telefono(?, ?, ?, ?)", conn)) {
                 finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize modify client statement\n", false);
@@ -552,7 +550,6 @@ static void modify_client(MYSQL *conn){
                 printf("Invalid digit!");
                 goto l_c2;
             }
-            numero_i = atoi(numero_c);
             
             if(!setup_prepared_stmt(&prepared_stmt, "call elimina_cellulare(?)", conn)) {
                 finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize modify client statement\n", false);
@@ -573,7 +570,6 @@ static void modify_client(MYSQL *conn){
                 printf("Invalid digit!");
                 goto l_t2;
             }
-            numero_i = atoi(numero_c);
             
             if(!setup_prepared_stmt(&prepared_stmt, "call elimina_telefono(?, ?, ?, ?)", conn)) {
                 finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize modify client statement\n", false);

@@ -336,8 +336,7 @@ static void add_employee(MYSQL *conn){
     char nome[64];
     char titolo_studio[64];
     char ruolo[64];
-    char telefono_c[10];
-    int telefono;
+    char numero_c[10];
     char pssw[64];
     
     printf("\nEmployee Tax Code: ");
@@ -362,9 +361,13 @@ static void add_employee(MYSQL *conn){
     
     printf("Qualification: ");
     getInput(64, titolo_studio, false);
-    printf("Telephone number: ");
-    getInput(10, telefono_c, false);
-    telefono = atoi(telefono_c);
+l_t1:
+    printf("\nTelephone Number: ");
+    getInput(10, numero_c, false);
+    if (isNumber(numero_c) == 0){
+        printf("Invalid digit!");
+        goto l_t1;
+    }
     
     if(!setup_prepared_stmt(&prepared_stmt, "call aggiungi_impiegato(?, ?, ?, ?, ?, ?)", conn)) {
         finish_with_stmt_error(conn, prepared_stmt, "\nUnable to initialize employee insertion statement\n", false);
@@ -384,9 +387,9 @@ static void add_employee(MYSQL *conn){
     param[2].buffer = titolo_studio;
     param[2].buffer_length = strlen(titolo_studio);
     
-    param[3].buffer_type = MYSQL_TYPE_LONG;
-    param[3].buffer = &telefono;
-    param[3].buffer_length = sizeof(telefono);
+    param[3].buffer_type = MYSQL_TYPE_VAR_STRING;
+    param[3].buffer = numero_c;
+    param[3].buffer_length = strlen(numero_c);
     
     param[4].buffer_type = MYSQL_TYPE_VAR_STRING;
     param[4].buffer = ruolo;
