@@ -39,6 +39,8 @@ Select @ore;
 call report_annuale('SPZ','2022',@ore);
 Select @ore;
 
+CREATE INDEX turno_centro_impiegato on `Turno`(`Centro_Turno`,`Impiegato_Turno`);
+
 call aggiungi_turno('2022-02-04','2022-02-4','Cashier',1,'AAA');
 
 call aggiungi_turno('2022-02-03','2022-02-3','Cashier',1,'AAA');
