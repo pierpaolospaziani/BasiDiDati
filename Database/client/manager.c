@@ -221,6 +221,7 @@ l_year:
 
     if (mysql_stmt_execute(prepared_stmt) != 0) {
         print_stmt_error (prepared_stmt, "\nAn error occurred showing montly report.");
+        goto end;
     }
     
     dump_result_set(conn, prepared_stmt, "\nHere is the report:");
@@ -244,6 +245,7 @@ l_year:
     }
     
     printf("\nThis employee collected %d hour/s of work!\n", ore);
+end:
     mysql_stmt_free_result(prepared_stmt);
     for(; mysql_next_result(conn) == 0;)
     mysql_stmt_close(prepared_stmt);
@@ -294,6 +296,7 @@ l_year:
 
     if (mysql_stmt_execute(prepared_stmt) != 0) {
         print_stmt_error (prepared_stmt, "\nAn error occurred showing annual report.");
+        goto end;
     }
     
     dump_result_set(conn, prepared_stmt, "\nHere is the report:");
@@ -317,6 +320,7 @@ l_year:
     }
     
     printf("\nThis employee collected %d hour/s of work!\n", var_ore);
+end:
     mysql_stmt_free_result(prepared_stmt);
     for(; mysql_next_result(conn) == 0;)
     mysql_stmt_close(prepared_stmt);

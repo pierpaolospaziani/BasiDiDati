@@ -121,6 +121,7 @@ l_date:
 
     if (mysql_stmt_execute(prepared_stmt) != 0) {
         print_stmt_error (prepared_stmt, "\nAn error occurred while renting the film.");
+        goto end;
     }
     
     memset(param, 0, sizeof(param));
@@ -146,6 +147,7 @@ l_date:
     }
     
     printf("\nFilm successfully rented!\n\nThe price is €%.2f for rental and €%.2f per day.\n\nTotal Cost: €%.2f.\n", costo_noleggio, costo_giornaliero, costo_noleggio + (costo_giornaliero * num_giorni));
+end:
     mysql_stmt_free_result(prepared_stmt);
     for(; mysql_next_result(conn) == 0;)
     mysql_stmt_close(prepared_stmt);
@@ -305,6 +307,7 @@ static void client_info(MYSQL *conn){
 
     if (mysql_stmt_execute(prepared_stmt) != 0) {
         print_stmt_error (prepared_stmt, "\nAn error occurred while showing client infos.");
+        goto end;
     }
     
     do {
@@ -333,6 +336,7 @@ static void client_info(MYSQL *conn){
         }
     } while (status == 0);
     
+end:
     mysql_stmt_free_result(prepared_stmt);
     for(; mysql_next_result(conn) == 0;)
     mysql_stmt_close(prepared_stmt);
