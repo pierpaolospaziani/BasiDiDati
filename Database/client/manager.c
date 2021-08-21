@@ -20,7 +20,7 @@ static void add_workshift(MYSQL *conn){
     printf("\nEmployee Tax Code: ");
     getInput(63, cf, false);
     
-    char op = multiChoice("Cashier, Clerk or Warehouseman? [1/2/3]: ", options, 3);
+    char op = multiChoice("Cashier, Clerk or Warehouseman?: ", options, 3);
     switch(op) {
         case '1':
             strcpy(carica,"Cashier");
@@ -175,7 +175,7 @@ l_month:
     printf("Month [1-12]:      ");
     getInput(2, mm_c, false);
     if (isNumber(mm_c) == 0){
-        printf("Invalid digit!");
+        printf("Invalid digit\n!");
         goto l_month;
     }
     mm = atoi(mm_c);
@@ -188,7 +188,7 @@ l_year:
     printf("Year:              ");
     getInput(4, yy_c, false);
     if (isNumber(yy_c) == 0){
-        printf("Invalid digit!");
+        printf("Invalid digit\n!");
         goto l_year;
     }
     yy = atoi(yy_c);
@@ -267,7 +267,7 @@ l_year:
     printf("Year:              ");
     getInput(4, year_c, false);
     if (isNumber(year_c) == 0){
-        printf("Invalid digit!");
+        printf("Invalid digit\n!");
         goto l_year;
     }
     year = atoi(year_c);
@@ -346,7 +346,7 @@ static void add_employee(MYSQL *conn){
     printf("Password for login: ");
     getInput(64, pssw, false);
     
-    char op = multiChoice("Manager or Employee? [1/2]: ", options, 2);
+    char op = multiChoice("Manager or Employee?: ", options, 2);
     switch(op) {
         case '1':
             sprintf(ruolo,"Manager");
@@ -365,7 +365,7 @@ l_t1:
     printf("\nTelephone Number: ");
     getInput(10, numero_c, false);
     if (isNumber(numero_c) == 0){
-        printf("Invalid digit!");
+        printf("Invalid digit\n!");
         goto l_t1;
     }
     
@@ -569,15 +569,15 @@ static void add_film(MYSQL *conn){
             printf("How many?: ");
             getInput(15, actors_c, false);
             if (isNumber(actors_c) == 0){
-                printf("Invalid digit!");
+                printf("Invalid digit\n!");
                 goto act;
             }
             actors = atoi(actors_c);
             
             for (int i=0; i<actors; i++){
-                printf("\nActor %d Name: ", i);
+                printf("\nActor %d Name: ", i+1);
                 getInput(64, name, false);
-                printf("Actor %d Surname: ", i);
+                printf("Actor %d Surname: ", i+1);
                 getInput(64, surname, false);
                 
                 
