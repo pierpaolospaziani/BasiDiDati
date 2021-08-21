@@ -34,14 +34,14 @@ call login('S','Pier',@a, @nome);
 Select @a;
 Select @nome;
 
-call report_mensile('SPZ','2','2022',@ore);
+call report_mensile('impiegato','2','2021',@ore);
 Select @ore;
-call report_annuale('SPZ','2022',@ore);
+call report_annuale('impiegato','2021',@ore);
 Select @ore;
 
 CREATE INDEX turno_centro_impiegato on `Turno`(`Centro_Turno`,`Impiegato_Turno`);
 
-call aggiungi_turno('2022-02-04','2022-02-4','Cashier',1,'AAA');
+call aggiungi_turno('2022-02-04','2022-02-4','Cashier',1,'impiegato');
 
 call aggiungi_turno('2022-02-03','2022-02-3','Cashier',1,'AAA');
 call aggiungi_turno('2022-02-03','2022-02-3','Cashier',1,'BBB');
@@ -99,7 +99,6 @@ select * from Indirizzo;
 select * from Email;
 select * from Telefono;
 select * from Cellulare;
-
 
 
 
