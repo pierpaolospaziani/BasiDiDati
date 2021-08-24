@@ -431,7 +431,7 @@ static void modify_client(MYSQL *conn){
             printf("\nCellular Number: ");
             getInput(10, numero_c, false);
             if (isNumber(numero_c) == 0){
-                printf("Invalid digit\n!");
+                printf("Invalid digit!\n");
                 goto l_c1;
             }
             
@@ -455,7 +455,7 @@ static void modify_client(MYSQL *conn){
             printf("\nTelephone Number: ");
             getInput(10, numero_c, false);
             if (isNumber(numero_c) == 0){
-                printf("Invalid digit\n!");
+                printf("Invalid digit!\n");
                 goto l_t1;
             }
             
@@ -547,7 +547,7 @@ static void modify_client(MYSQL *conn){
             printf("\nCellular Number: ");
             getInput(10, numero_c, false);
             if (isNumber(numero_c) == 0){
-                printf("Invalid digit\n!");
+                printf("Invalid digit!\n");
                 goto l_c2;
             }
             
@@ -567,7 +567,7 @@ static void modify_client(MYSQL *conn){
             printf("\nTelephone Number: ");
             getInput(10, numero_c, false);
             if (isNumber(numero_c) == 0){
-                printf("Invalid digit\n!");
+                printf("Invalid digit!\n");
                 goto l_t2;
             }
             

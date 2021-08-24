@@ -175,7 +175,7 @@ l_month:
     printf("Month [1-12]:      ");
     getInput(2, mm_c, false);
     if (isNumber(mm_c) == 0){
-        printf("Invalid digit\n!");
+        printf("Invalid digit!\n");
         goto l_month;
     }
     mm = atoi(mm_c);
@@ -188,7 +188,7 @@ l_year:
     printf("Year:              ");
     getInput(4, yy_c, false);
     if (isNumber(yy_c) == 0){
-        printf("Invalid digit\n!");
+        printf("Invalid digit!\n");
         goto l_year;
     }
     yy = atoi(yy_c);
@@ -267,7 +267,7 @@ l_year:
     printf("Year:              ");
     getInput(4, year_c, false);
     if (isNumber(year_c) == 0){
-        printf("Invalid digit\n!");
+        printf("Invalid digit!\n");
         goto l_year;
     }
     year = atoi(year_c);
@@ -365,7 +365,7 @@ l_t1:
     printf("\nTelephone Number: ");
     getInput(10, numero_c, false);
     if (isNumber(numero_c) == 0){
-        printf("Invalid digit\n!");
+        printf("Invalid digit!\n");
         goto l_t1;
     }
     
@@ -569,7 +569,7 @@ static void add_film(MYSQL *conn){
             printf("How many?: ");
             getInput(15, actors_c, false);
             if (isNumber(actors_c) == 0){
-                printf("Invalid digit\n!");
+                printf("Invalid digit!\n");
                 goto act;
             }
             actors = atoi(actors_c);

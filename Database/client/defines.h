@@ -5,7 +5,7 @@
 #include <ctype.h>
 
 static bool date_check(int dd, int mm, int yy){
-    if(yy>=2021 && yy<=9999){
+    if(yy>=2000 && yy<=9999){
         if(mm>=1 && mm<=12){
             if((dd>=1 && dd<=31) && (mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10 || mm==12)){
                 return true;
