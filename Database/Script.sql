@@ -101,7 +101,25 @@ select * from Telefono;
 select * from Cellulare;
 
 
-
+insert into Remake values('Iron Man 3','Shane Black','Iron Man','Jon Favreau');
+select  `ID_Copia` as `Copy ID`,
+			`Titolo_Copia` as `Film`,
+			`Regista_Copia` as `Movie Director`,
+            `Anno` as `Year`,
+            `Settore_Copia` as `Sector`,
+            `Posizione` as `Position`,
+            IFNULL(`Titolo_Originale`,'') as `Remake of ..`,
+            IFNULL(`Regista_Originale`,'') as `Directed by ..`
+				from `Copia_Film` left join `Noleggio` 
+				on `ID_Copia` = `Numero_Copia` 
+				and `Titolo_Copia` = `Titolo_Noleggio` 
+				and `Regista_Copia` = `Regista_Noleggio`
+				join `Film` 
+				on `Titolo` = `Titolo_Copia` 
+				and `Regista` = `Regista_Copia`
+                left join `Remake` on `Titolo_Copia` = `Titolo_Remake` and `Regista_Copia` = `Regista_Remake`
+					where `Centro_Copia` = '1' and `ID_Noleggio` is null
+					order by `Titolo_Copia`, `Regista_Copia` asc;
 
 
 
